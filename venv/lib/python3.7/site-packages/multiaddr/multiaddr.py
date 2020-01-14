@@ -170,6 +170,9 @@ class Multiaddr(collections.abc.Mapping):
     def __repr__(self):
         return "<Multiaddr %s>" % str(self)
 
+    def __hash__(self):
+        return self._bytes.__hash__()
+
     def to_bytes(self):
         """Returns the byte array representation of this Multiaddr."""
         return self._bytes

@@ -4,7 +4,7 @@
 from const import USERNAME, PASSWD, NODE_COUNT, IP_CONFIG, ABI, BIN
 from gethnode import GethNode
 from iplist import IPList
-from conf import generate_genesis_poa, generate_genesis_pow
+from conf import generate_genesis_pow
 from functools import wraps
 import time
 import subprocess
@@ -190,7 +190,7 @@ class SingleChain():
             node_count = len(self.nodes)
 
             # connect nodes in a single chain with each other
-            for i in range(4):  # (node_count)
+            for i in range(node_count):  # (node_count)
                 for j in range(i+1, node_count):  # (i+1,node_count)
                     print("---------------------add peer---------------------")
                     t1 = threading.Thread(target=self.nodes[i].add_peer, args=(self.nodes[j].enode,))
@@ -234,9 +234,8 @@ class SingleChain():
                 t.join()
 
 # --------------------------------test-mul--------------------------------
-
-
 # test_get_mul_contractaddr
+
 
 def test_get_mul_contractaddr(contract_num, nodes):
     threads = []
@@ -260,8 +259,8 @@ def test_get_mul_contractaddr(contract_num, nodes):
         contractaddr_list.append(contractaddr)
     return contractaddr_list
 
-
 # test_send_mul_mint
+
 
 def test_send_mul_mint(mint_num, nodes, accounts, test_nodes):
     threads = []
@@ -302,7 +301,7 @@ def test_send_mul_mint(mint_num, nodes, accounts, test_nodes):
 def test_send_mul_convert(convert_num, nodes, accounts, test_nodes):
     threads = []
     for i in range(convert_num):
-        t = MyThread(nodes[i].send_convert_transaction, args=(accounts[i], "0x3e8", test_nodes[i]))
+        t = MyThread(nodes[i].send_convert_transaction, args=(accounts[i], test_nodes[i]))
         threads.append(t)
         time.sleep(2)
     for t in threads:
@@ -319,6 +318,7 @@ def test_send_mul_convert(convert_num, nodes, accounts, test_nodes):
         except:
             convert_hash = "0x1"
             consensus_time = 0
+            exec_time = 0
         convert_hash_list.append(convert_hash)
         convert_consensus_time.append(consensus_time)
         convert_exec_time.append(exec_time)
@@ -335,10 +335,10 @@ def test_send_mul_convert(convert_num, nodes, accounts, test_nodes):
 
 # test_send_mul_commit
 
-def test_send_mul_commit(commit_num, nodes, accounts, contractaddr_list, convert_hash_list, test_nodes, hashchainzero):
+def test_send_mul_commit(commit_num, nodes, accounts, contractaddr, test_nodes):
     threads = []
     for i in range(commit_num):
-        t = MyThread(nodes[i].send_commit_transaction, args=(accounts[i], "0x3e8", contractaddr_list[i], convert_hash_list[i], hashchainzero, "0x3e8", test_nodes[i]))
+        t = MyThread(nodes[i].send_commit_transaction, args=(accounts[i], contractaddr, test_nodes[i]))
         threads.append(t)
         time.sleep(2)
     for t in threads:
@@ -355,6 +355,7 @@ def test_send_mul_commit(commit_num, nodes, accounts, contractaddr_list, convert
         except:
             commit_hash = "0x1"
             consensus_time = 0
+            exec_time = 0
         commit_hash_list.append(commit_hash)
         commit_consensus_time.append(consensus_time)
         commit_exec_time.append(exec_time)
@@ -371,10 +372,10 @@ def test_send_mul_commit(commit_num, nodes, accounts, contractaddr_list, convert
 
 # test_send_mul_claim
 
-def test_send_mul_claim(claim_num, nodes, accounts, contractaddr_list, hashchaintmp, test_nodes):
+def test_send_mul_claim(claim_num, nodes, accounts, contractaddr, addrA, test_nodes):
     threads = []
     for i in range(claim_num):
-        t = MyThread(nodes[i].send_claim_transaction, args=(accounts[i], "0x3e4", contractaddr_list[i], hashchaintmp, test_nodes[i]))
+        t = MyThread(nodes[i].send_claim_transaction, args=(accounts[i], contractaddr, addrA[i], test_nodes[i]))
         threads.append(t)
         time.sleep(2)
     for t in threads:
@@ -391,6 +392,7 @@ def test_send_mul_claim(claim_num, nodes, accounts, contractaddr_list, hashchain
         except:
             claim_hash = "0x1"
             consensus_time = 0
+            exec_time = 0
         claim_hash_list.append(claim_hash)
         claim_consensus_time.append(consensus_time)
         claim_exec_time.append(exec_time)
@@ -407,10 +409,10 @@ def test_send_mul_claim(claim_num, nodes, accounts, contractaddr_list, hashchain
 
 # test_send_mul_rerfund
 
-def test_send_mul_refund(refund_num, nodes, accounts, contractaddr_list, test_nodes):
+def test_send_mul_refund(refund_num, nodes, accounts, contractaddr, test_nodes):
     threads = []
     for i in range(refund_num):
-        t = MyThread(nodes[i].send_refund_transaction, args=(accounts[i], "0x4", contractaddr_list[i], test_nodes[i]))
+        t = MyThread(nodes[i].send_refund_transaction, args=(accounts[i], contractaddr, test_nodes[i]))
         threads.append(t)
         time.sleep(2)
     for t in threads:
@@ -427,6 +429,7 @@ def test_send_mul_refund(refund_num, nodes, accounts, contractaddr_list, test_no
         except:
             refund_hash = "0x1"
             consensus_time = 0
+            exec_time = 0
         refund_hash_list.append(refund_hash)
         refund_consensus_time.append(consensus_time)
         refund_exec_time.append(exec_time)
@@ -443,10 +446,10 @@ def test_send_mul_refund(refund_num, nodes, accounts, contractaddr_list, test_no
 
 # test_send_mul_deposit
 
-def test_send_mul_deposit(deposit_num, nodes, accounts, contractaddr_list, hash_list, test_nodes):
+def test_send_mul_deposit(deposit_num, nodes, accounts, N, test_nodes):
     threads = []
     for i in range(deposit_num):
-        t = MyThread(nodes[i].send_depositsg_transaction, args=(accounts[i], contractaddr_list[i], hash_list[i], test_nodes[i]))
+        t = MyThread(nodes[i].send_depositsg_transaction, args=(accounts[i], N, test_nodes[i]))
         threads.append(t)
         time.sleep(2)
     for t in threads:
@@ -463,6 +466,7 @@ def test_send_mul_deposit(deposit_num, nodes, accounts, contractaddr_list, hash_
         except:
             deposit_hash = "0x1"
             consensus_time = 0
+            exec_time = 0
         deposit_hash_list.append(deposit_hash)
         deposit_consensus_time.append(consensus_time)
         deposit_exec_time.append(exec_time)
@@ -477,10 +481,10 @@ def test_send_mul_deposit(deposit_num, nodes, accounts, contractaddr_list, hash_
     return deposit_hash_list, deposit_consensus_avetime, deposit_exec_avetime
 
 
-def get_mul_pubkey(node_count, nodesa , accountsa, nodesb, accountsb, contractaddr, hash_list):
+def get_mul_pubkey(node_count, nodesa , accountsa, hash_list):
     """可用于测试节点是否工作 ， 除去不工作的节点"""
     threads = []
-    for i in range(node_count//2):
+    for i in range(node_count):
         t = MyThread(nodesa[i].get_pubkeyrlp, args=(accountsa[i], "root"))
         threads.append(t)
     for t in threads:
@@ -491,28 +495,19 @@ def get_mul_pubkey(node_count, nodesa , accountsa, nodesb, accountsb, contractad
     for i, t in enumerate(threads):
         if(t.get_result() == None):
             nodesa[i] = 0
-            nodesb[i] = 0
             accountsa[i] = 0
-            accountsb[i] = 0
-            contractaddr[i] = 0
             hash_list[i] = 0
             tmp += 1
-            node_count -= 2
+            node_count -= 1
 
     for i in range(tmp):
         nodesa.remove(0)
-        nodesb.remove(0)
         accountsa.remove(0)
-        accountsb.remove(0)
-        contractaddr.remove(0)
         hash_list.remove(0)
 
     print("----------------------alive_Node-------------------")
     print("nodesa = ", nodesa)
     print("accountsa = ", accountsa)
-    print("nodesb = ", nodesb)
-    print("accountsb = ", accountsb)
-    print("contractaddr = ", contractaddr)
     print("hash_list = ", hash_list)
     return node_count
 
@@ -569,170 +564,176 @@ if __name__ == "__main__":
     c.config_consensus_chain() 
     c.run_nodes()
 
+    #  全部节点用于挖矿
+    for i in range(1, NODE_COUNT+1):
+        c.get_node_by_index(i).start_miner()
+    time.sleep(5)
+
     # 划分A类B类账户
-    print("------------------划分A类B类账户------------------")
+    print("------------------账户列表------------------")
     accounts_A = []
-    accounts_B = []
-    for i in range(5, NODE_COUNT, 2):
+    # accounts_B = []
+    for i in range(1, NODE_COUNT+1, 1):
         accounts_A.append(c.get_node_by_index(i).get_accounts()[0])
-    for i in range(6, NODE_COUNT+2, 2):
-        accounts_B.append(c.get_node_by_index(i).get_accounts()[0])
+    # for i in range(1, NODE_COUNT+1, 1):
+    #     accounts_B.append(c.get_node_by_index(i).get_accounts()[0])
     print("A类账户：", accounts_A)
-    print("B类账户：", accounts_B)
+    # print("B类账户：", accounts_B)
 
     # 划分A类B类nodes
-    print("------------------划分A类B类nodes------------------")
+    print("------------------nodes列表------------------")
     nodes_A = []
-    nodes_B = []
-    for i in range(5, NODE_COUNT, 2):
+    # nodes_B = []
+    for i in range(1, NODE_COUNT+1, 1):
         nodes_A.append(c.get_node_by_index(i))
-    for i in range(6, NODE_COUNT+2, 2):
-        nodes_B.append(c.get_node_by_index(i))
+    # for i in range(1, NODE_COUNT+1, 1):
+    #     nodes_B.append(c.get_node_by_index(i))
     print("A类nodes：", nodes_A)
-    print("B类nodes：", nodes_B)
+    # print("B类nodes：", nodes_B)
 
-    #  1-4 nodes用于挖矿
-    for i in range(1, 5):
-        c.get_node_by_index(i).start_miner()
-    time.sleep(200)
+    print("-----------Wait for Generate DAG------------")
+    print("Please wait for 15 minutes at least!!!")
+    print("......")
+    time.sleep(900)
 
     # Gen_hash_chain
-    print('------------------Gen_hash_chain------------------')
-    hashchainlength = 1000
-    t1 = time.time()
-    hashchainarr = c.get_node_by_index(1).Genhashchain(hashchainlength)
-    t2 = time.time()
-    Gen_hash_chain_time = t2 - t1
-    print("Gen_hash_chain_time =", Gen_hash_chain_time)
-    print("Hash_chain_Arr = ", hashchainarr)
-    time.sleep(3)
+    # print('------------------Gen_hash_chain------------------')
+    # hashchainlength = 1000
+    # t1 = time.time()
+    # hashchainarr = c.get_node_by_index(1).Genhashchain(hashchainlength)
+    # t2 = time.time()
+    # Gen_hash_chain_time = t2 - t1
+    # print("Gen_hash_chain_time =", Gen_hash_chain_time)
+    # print("Hash_chain_Arr = ", hashchainarr)
+    # time.sleep(3)
 
     # Get_contract_addr
-    contractaddr_list = []
-    tran_number = NODE_COUNT - 4
-    for i in range(tran_number // 2):
-        print('------------------Get-Contract-Address------------------')
-        #  取A类节点用于部署合约
-        w3 = Web3(Web3.HTTPProvider("http://%s:%d" % (nodes_A[i].ip.address, nodes_A[i].rpc_port)))
-        user = w3.eth.accounts[0]
-        t1 = time.time()
-        tx_hash = w3.eth.contract(abi=ABI, bytecode=BIN).constructor().transact({'from': user, 'gas': 800000})
-        t2 = time.time()
-        depoly_contract_time = t2 - t1
-        print("depoly_contract_time =", depoly_contract_time)
-        tx_receipt = w3.eth.waitForTransactionReceipt(tx_hash, timeout=360)
-        contract_address = tx_receipt['contractAddress']
-        print("contract_address =", contract_address)
-        contractaddr_list.append(contract_address)
+    # contractaddr_list = []
+    # tran_number = NODE_COUNT - 2
+    # for i in range(2):
+    print('------------------Get-Contract-Address------------------')
+    #  部署合约
+    w3 = Web3(Web3.HTTPProvider("http://%s:%d" % (nodes_A[1].ip.address, nodes_A[1].rpc_port)))
+    user = w3.eth.accounts[0]
+    t1 = time.time()
+    tx_hash = w3.eth.contract(abi=ABI, bytecode=BIN).constructor().transact({'from': user, 'gas': '0xc3500'})
+    t2 = time.time()
+    print("tx_hash =", tx_hash)
+    depoly_contract_time = t2 - t1
+    print("depoly_contract_time =", depoly_contract_time)
+    tx_receipt = w3.eth.waitForTransactionReceipt(tx_hash, timeout=360)
+    contract_address = tx_receipt['contractAddress']
+    print("contract_address =", contract_address)
+    # contractaddr_list.append(contract_address)
 
-    print('------------------test_send_mul_mint------------------')
-    mint_hash_list, mint_consensus_avetime, mint_exec_avetime = test_send_mul_mint(tran_number // 2, nodes_A,
-                                                                                   accounts_A, nodes_A)
-
-    tran_number = get_mul_pubkey(tran_number, nodes_A, accounts_A, nodes_B, accounts_B, contractaddr_list, mint_hash_list)
-
-    print("mint_hash_list = ", mint_hash_list)
-    print("mint_exec_avetime = ", mint_exec_avetime)
-    print("mint_consensus_avetime = ", mint_consensus_avetime)
-    print("Node_Count = ", tran_number)
-    time.sleep(2)
+    # print('------------------test_send_mul_mint------------------')
+    # mint_hash_list, mint_consensus_avetime, mint_exec_avetime = test_send_mul_mint(tran_number // 2, nodes_A,
+    #                                                                                accounts_A, nodes_A)
+    #
+    # tran_number = get_mul_pubkey(tran_number, nodes_A, accounts_A, nodes_B, accounts_B, mint_hash_list)
+    #
+    # print("mint_hash_list = ", mint_hash_list)
+    # print("mint_exec_avetime = ", mint_exec_avetime)
+    # print("mint_consensus_avetime = ", mint_consensus_avetime)
+    # print("Node_Count = ", tran_number)
+    # time.sleep(2)
 
     print('------------------test_send_mul_convert------------------')
-    convert_hash_list, convert_consensus_avetime, convert_exec_avetime = test_send_mul_convert(tran_number // 2,
+    convert_hash_list, convert_consensus_avetime, convert_exec_avetime = test_send_mul_convert(NODE_COUNT,
                                                                                                nodes_A, accounts_A,
                                                                                                nodes_A)
 
-    tran_number = get_mul_pubkey(tran_number, nodes_A, accounts_A, nodes_B, accounts_B, contractaddr_list, convert_hash_list)
+    # NODE_COUNT = get_mul_pubkey(NODE_COUNT, nodes_A, accounts_A, convert_hash_list)
     print("convert_hash_list = ", convert_hash_list)
     print("convert_exec_avetime = ", convert_exec_avetime)
     print("convert_consensus_avetime = ", convert_consensus_avetime)
-    print("Node_Count = ", tran_number)
+    print("Node_Count = ", NODE_COUNT)
     time.sleep(2)
 
     print('------------------test_send_mul_commit------------------')
-    commit_hash_list, commit_consensus_avetime, commit_exec_avetime = test_send_mul_commit(tran_number // 2, nodes_A,
+    commit_hash_list, commit_consensus_avetime, commit_exec_avetime = test_send_mul_commit(NODE_COUNT, nodes_A,
                                                                                            accounts_A,
-                                                                                           contractaddr_list,
-                                                                                           convert_hash_list, nodes_A,
-                                                                                           hashchainarr[0])
+                                                                                           contract_address,
+                                                                                           nodes_A)
 
-    tran_number = get_mul_pubkey(tran_number, nodes_A, accounts_A, nodes_B, accounts_B, contractaddr_list, commit_hash_list)
+    # NODE_COUNT = get_mul_pubkey(NODE_COUNT, nodes_A, accounts_A, commit_hash_list)
     print("commit_hash_list = ", commit_hash_list)
     print("commit_exec_avetime = ", commit_exec_avetime)
     print("commit_consensus_avetime = ", commit_consensus_avetime)
-    print("Node_Count = ", tran_number)
+    print("Node_Count = ", NODE_COUNT)
     time.sleep(2)
 
     print('------------------test_send_mul_claim------------------')
-    claim_hash_list, claim_consensus_avetime, claim_exec_avetime = test_send_mul_claim(tran_number // 2, nodes_B,
-                                                                                       accounts_B, contractaddr_list,
-                                                                                       hashchainarr[996], nodes_B)
+    claim_hash_list, claim_consensus_avetime, claim_exec_avetime = test_send_mul_claim(NODE_COUNT, nodes_A,
+                                                                                       accounts_A, contract_address,
+                                                                                       accounts_A, nodes_A)
 
-    tran_number = get_mul_pubkey(tran_number, nodes_B, accounts_B, nodes_A, accounts_A, contractaddr_list, claim_hash_list)
+    # NODE_COUNT = get_mul_pubkey(NODE_COUNT, nodes_A, accounts_A, claim_hash_list)
     print("claim_hash_list = ", claim_hash_list)
     print("claim_exec_avetime = ", claim_exec_avetime)
     print("claim_consensus_avetime = ", claim_consensus_avetime)
-    print("Node_Count = ", tran_number)
-    time.sleep(2)
-
-    print('------------------test_send_mul_depositB------------------')
-    deposit_hash_list, depositB_consensus_avetime, depositB_exec_avetime = test_send_mul_deposit(tran_number // 2,
-                                                                                                 nodes_B, accounts_B,
-                                                                                                 contractaddr_list,
-                                                                                                 claim_hash_list,
-                                                                                                 nodes_B)
-
-    print("depositB_hash_list = ", deposit_hash_list)
-    print("depositB_exec_avetime = ", depositB_exec_avetime)
-    print("depositB_consensus_avetime = ", depositB_consensus_avetime)
+    print("Node_Count = ", NODE_COUNT)
     time.sleep(2)
 
     print('------------------test_send_mul_refund------------------')
-    refund_hash_list, refund_consensus_avetime, refund_exec_avetime = test_send_mul_refund(tran_number // 2, nodes_A,
+    refund_hash_list, refund_consensus_avetime, refund_exec_avetime = test_send_mul_refund(NODE_COUNT, nodes_A,
                                                                                            accounts_A,
-                                                                                           contractaddr_list, nodes_A)
+                                                                                           contract_address, nodes_A)
 
-    tran_number = get_mul_pubkey(tran_number, nodes_A, accounts_A, nodes_B, accounts_B, contractaddr_list, refund_hash_list)
+    # NODE_COUNT = get_mul_pubkey(NODE_COUNT, nodes_A, accounts_A, refund_hash_list)
     print("refund_hash_list = ", refund_hash_list)
     print("refund_exec_avetime = ", refund_exec_avetime)
     print("refund_consensus_avetime = ", refund_consensus_avetime)
-    print("Node_Count = ", tran_number)
+    print("Node_Count = ", NODE_COUNT)
     time.sleep(2)
 
-    print('------------------test_send_mul_depositA------------------')
-    deposit_hash_list, depositA_consensus_avetime, depositA_exec_avetime = test_send_mul_deposit(tran_number // 2,
+    print('------------------test_send_mul_deposit------------------')
+    deposit_hash_list, deposit_consensus_avetime, deposit_exec_avetime = test_send_mul_deposit(NODE_COUNT,
                                                                                                  nodes_A, accounts_A,
-                                                                                                 contractaddr_list,
-                                                                                                 refund_hash_list,
+                                                                                                 '0x0',
                                                                                                  nodes_A)
-    tran_number = get_mul_pubkey(tran_number, nodes_A, accounts_A, nodes_B, accounts_B, contractaddr_list,
-                                 deposit_hash_list)
-    print("depositA_hash_list = ", deposit_hash_list)
-    print("depositA_exec_avetime = ", depositA_exec_avetime)
-    print("depositA_consensus_avetime = ", depositA_consensus_avetime)
-    print("Node_Count = ", tran_number)
+
+    print("depositB_hash_list = ", deposit_hash_list)
+    print("depositB_exec_avetime = ", deposit_exec_avetime)
+    print("depositB_consensus_avetime = ", deposit_consensus_avetime)
     time.sleep(2)
+
+#####################################################################################################################
+
+    # print('------------------test_send_mul_depositA------------------')
+    # deposit_hash_list, depositA_consensus_avetime, depositA_exec_avetime = test_send_mul_deposit(tran_number // 2,
+    #                                                                                              nodes_A, accounts_A,
+    #                                                                                              contractaddr_list,
+    #                                                                                              refund_hash_list,
+    #                                                                                              nodes_A)
+    # tran_number = get_mul_pubkey(tran_number, nodes_A, accounts_A, nodes_B, accounts_B, contractaddr_list,
+    #                              deposit_hash_list)
+    # print("depositA_hash_list = ", deposit_hash_list)
+    # print("depositA_exec_avetime = ", depositA_exec_avetime)
+    # print("depositA_consensus_avetime = ", depositA_consensus_avetime)
+    # print("Node_Count = ", tran_number)
+    # time.sleep(2)
 
     with open('time.txt', 'w') as f:
-        f.write('Gen_hash_chain_time = %s\n' % Gen_hash_chain_time)
-        f.write('mint_exec_avetime = %s\n' % mint_exec_avetime)
+        # f.write('Gen_hash_chain_time = %s\n' % Gen_hash_chain_time)
+        # f.write('mint_exec_avetime = %s\n' % mint_exec_avetime)
         f.write('convert_exec_avetime = %s\n' % convert_exec_avetime)
         f.write('commit_exec_avetime = %s\n' % commit_exec_avetime)
         f.write('claim_exec_avetime = %s\n' % claim_exec_avetime)
         f.write('refund_exec_avetime = %s\n' % refund_exec_avetime)
-        f.write('depositA_exec_avetime = %s\n' % depositA_exec_avetime)
-        f.write('depositB_exec_avetime = %s\n' % depositB_exec_avetime)
+        f.write('depositA_exec_avetime = %s\n' % deposit_exec_avetime)
+        # f.write('depositB_exec_avetime = %s\n' % depositB_exec_avetime)
         f.write('========================================================\n')
-        f.write('mint_consensus_avetime = %s\n' % mint_consensus_avetime)
+        # f.write('mint_consensus_avetime = %s\n' % mint_consensus_avetime)
         f.write('convert_consensus_avetime = %s\n' % convert_consensus_avetime)
         f.write('commit_consensus_avetime = %s\n' % commit_consensus_avetime)
         f.write('claim_consensus_avetime = %s\n' % claim_consensus_avetime)
         f.write('refund_consensus_avetime = %s\n' % refund_consensus_avetime)
-        f.write('depositA_consensus_avetime = %s\n' % depositA_consensus_avetime)
-        f.write('depositB_consensus_avetime = %s\n' % depositB_consensus_avetime)
+        f.write('depositA_consensus_avetime = %s\n' % deposit_consensus_avetime)
+        # f.write('depositB_consensus_avetime = %s\n' % depositB_consensus_avetime)
         f.write('========================================================\n')
 
-    for i in range(1, 5):
+    for i in range(1, NODE_COUNT+1):
         c.get_node_by_index(i).stop_miner()
     time.sleep(10)
     

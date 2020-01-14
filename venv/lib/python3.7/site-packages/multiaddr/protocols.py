@@ -27,6 +27,7 @@ P_QUIC = 0x01CC
 P_WS = 0x01DD
 P_WSS = 0x01DE
 P_ONION = 0x01BC
+P_ONION3 = 0x01BD
 P_P2P_CIRCUIT = 0x0122
 P_DNS = 0x35
 P_DNS4 = 0x36
@@ -54,6 +55,7 @@ _CODES = [
     P_WS,
     P_WSS,
     P_ONION,
+    P_ONION3,
     P_P2P_CIRCUIT,
     P_DNS,
     P_DNS4,
@@ -134,6 +136,7 @@ PROTOCOLS = [
     Protocol(P_UTP, 'utp', None),
     Protocol(P_P2P, 'p2p', 'p2p'),
     Protocol(P_ONION, 'onion', 'onion'),
+    Protocol(P_ONION3, 'onion3', 'onion3'),
     Protocol(P_QUIC, 'quic', None),
     Protocol(P_HTTP, 'http', None),
     Protocol(P_HTTPS, 'https', None),

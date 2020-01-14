@@ -45,7 +45,7 @@ class GethNode(object):
         """Start a container for geth on remote server and create a new account."""
         # --ulimit nofile=<soft limit>:<hard limit> set the limit for open files
         docker_run_command = ('docker run --ulimit nofile=65535:65535 -td -p %d:8545 -p %d:30303 --rm --name %s '
-                              'easonbackpack/evstest:latest' % (self.rpc_port, self.ethereum_network_port, self.name))
+                              'easonbackpack/evsss:latest' % (self.rpc_port, self.ethereum_network_port, self.name))
         time.sleep(0.6)
         result = self.ip.exec_command(docker_run_command)
         if result:
@@ -160,9 +160,9 @@ class GethNode(object):
             t2 = 0
         return mint_hash, t2 - t1, t4 - t3
 
-    def send_convert_transaction(self, ffrom, value, test_node):
+    def send_convert_transaction(self, ffrom, test_node):
         """eth.sendConvertTransaction"""
-        CMD = ("docker exec -t %s /usr/bin/geth attach ipc://root/abc/geth.ipc --exec \"eth.sendConvertTransaction({from:\\\"%s\\\",value:\\\"%s\\\"})\"" % (self.name, ffrom, value))
+        CMD = ("docker exec -t %s /usr/bin/geth attach ipc://root/abc/geth.ipc --exec \"eth.sendConvertTransaction({from:\\\"%s\\\"})\"" % (self.name, ffrom))
         t3 = time.time()
         convert_hash = exec_command(CMD, self.ip)
         t4 = time.time()
@@ -176,9 +176,9 @@ class GethNode(object):
             t2 = 0
         return convert_hash, t2 - t1, t4 - t3
 
-    def send_commit_transaction(self, ffrom, value, to, txhash, h0, N, test_node):
+    def send_commit_transaction(self, ffrom, to, test_node):
         """eth.sendCommitTransaction"""
-        CMD = ("docker exec -t %s /usr/bin/geth attach ipc://root/abc/geth.ipc --exec \"eth.sendCommitTransaction({from:\\\"%s\\\",value:\\\"%s\\\",to:\\\"%s\\\",txhash:\\\"%s\\\",h0:\\\"%s\\\",N:\\\"%s\\\"})\"" % (self.name, ffrom, value, to, txhash, h0, N))
+        CMD = ("docker exec -t %s /usr/bin/geth attach ipc://root/abc/geth.ipc --exec \"eth.sendCommitTransaction({from:\\\"%s\\\",to:\\\"%s\\\",})\"" % (self.name, ffrom, to,))
         t3 = time.time()
         commit_hash = exec_command(CMD, self.ip)
         t4 = time.time()
@@ -192,9 +192,9 @@ class GethNode(object):
             t2 = 0
         return commit_hash, t2 - t1, t4 - t3
 
-    def send_claim_transaction(self, ffrom, value, to, hi, test_node):
+    def send_claim_transaction(self, ffrom, to, addA, test_node):
         """eth.sendClaimTransaction"""
-        CMD = ("docker exec -t %s /usr/bin/geth attach ipc://root/abc/geth.ipc --exec \"eth.sendClaimTransaction({from:\\\"%s\\\",value:\\\"%s\\\",to:\\\"%s\\\",hi:\\\"%s\\\"})\"" % (self.name, ffrom, value, to, hi))
+        CMD = ("docker exec -t %s /usr/bin/geth attach ipc://root/abc/geth.ipc --exec \"eth.sendClaimTransaction({from:\\\"%s\\\",to:\\\"%s\\\",addrA:\\\"%s\\\"})\"" % (self.name, ffrom, to, addA))
         t3 = time.time()
         claim_hash = exec_command(CMD, self.ip)
         t4 = time.time()
@@ -208,9 +208,9 @@ class GethNode(object):
             t2 = 0
         return claim_hash, t2 - t1, t4 - t3
 
-    def send_refund_transaction(self, ffrom, value, to, test_node):
+    def send_refund_transaction(self, ffrom, to, test_node):
         """eth.sendRefundTransaction"""
-        CMD = ("docker exec -t %s /usr/bin/geth attach ipc://root/abc/geth.ipc --exec \"eth.sendRefundTransaction({from:\\\"%s\\\",value:\\\"%s\\\",to:\\\"%s\\\"})\"" % (self.name, ffrom, value, to))
+        CMD = ("docker exec -t %s /usr/bin/geth attach ipc://root/abc/geth.ipc --exec \"eth.sendRefundTransaction({from:\\\"%s\\\",to:\\\"%s\\\"})\"" % (self.name, ffrom, to))
         t3 = time.time()
         refund_hash = exec_command(CMD, self.ip)
         t4 = time.time()
@@ -224,9 +224,9 @@ class GethNode(object):
             t2 = 0
         return refund_hash, t2 - t1, t4 - t3
 
-    def send_depositsg_transaction(self, ffrom, to, txhash, test_node):
+    def send_depositsg_transaction(self, ffrom, n, test_node):
         """eth.sendDepositsgTransaction"""
-        CMD = ("docker exec -t %s /usr/bin/geth attach ipc://root/abc/geth.ipc --exec \"eth.sendDepositsgTransaction({from:\\\"%s\\\",to:\\\"%s\\\",txhash:\\\"%s\\\"})\"" % (self.name, ffrom, to, txhash))
+        CMD = ("docker exec -t %s /usr/bin/geth attach ipc://root/abc/geth.ipc --exec \"eth.sendDepositsgTransaction({from:\\\"%s\\\",N:\\\"%s\\\"})\"" % (self.name, ffrom, n))
         t3 = time.time()
         deposit_hash = exec_command(CMD, self.ip)
         t4 = time.time()
@@ -240,7 +240,6 @@ class GethNode(object):
             t2 = 0
         return deposit_hash, t2 - t1, t4 - t3
 
-
     def send_redeem_transaction(self, ffrom, value):
         """eth.sendRedeemTransaction"""
         CMD = ("docker exec -t %s /usr/bin/geth attach ipc://root/abc/geth.ipc --exec \"eth.sendRedeemTransaction({from:\\\"%s\\\",value:\\\"%s\\\"})\"" % (self.name, ffrom, value))
@@ -251,6 +250,7 @@ class GethNode(object):
         method = 'eth_genHashChain'
         params = [hashchainlength]
         return self.rpc_call(method, params)
+        return self.rpc_call(method, params)
 
     def get_transaction(self, transaction_id):
         """eth.getTransaction()"""
@@ -258,49 +258,32 @@ class GethNode(object):
         params = [transaction_id]
         return self.rpc_call(method, params)
 
-    ###################################################################################################################
-
-    #  G3
-    def Get_Contract_Address(self, abi, ffrom, bin, gas):
-        with open('contract.js', 'w') as contract:
-            contract.write('mycon = eth.contract(%s);\n' % abi)
-            contract.write('newcon = mycon.new({from:"%s",data:"%s",gas:%s});\n' % (ffrom, bin, gas))
-            # contract.write('contractAddress = newcon.address;\n')
-            # contract.write('console.log(newcon.transactionHash);\n')
-            # contract.write('contractAddress = eth.getTransactionReceipt(newcon.transactionHash).contractAddress;\n')
-            contract.write('eth.getTransactionReceipt(newcon.transactionHash);\n')
-            # contract.write('console.log(contractAddress);\n')
-        copy_cmd = 'sshpass -p %s scp contract.js %s@%s:contract.js' % (self.password, self.username,
-                                                                               self.ip.address)
-        subprocess.run(copy_cmd, stdout=subprocess.PIPE, shell=True)
-        time.sleep(0.1)
-        docker_cp_cmd = ("docker cp contract.js %s:/root/contract.js" % self.name)
-        self.ip.exec_command(docker_cp_cmd)
-        load_script_cmd = ("docker exec -t %s /usr/bin/geth attach ipc://root/abc/geth.ipc --exec 'loadScript(\"contract.js\")'" % self.name)
-        return exec_command(load_script_cmd, self.ip)
-
-    #  G2
-    def GetTransactionReceipt_IPC(self, newcontransactionHash):
-        """eth.getTransactionReceipt"""
-        CMD = ("docker exec -t %s /usr/bin/geth attach ipc://root/abc/geth.ipc --exec \"eth.getTransactionReceipt(\\\"%s\\\").contractAddress\"" % (self.name, newcontransactionHash))
-        return exec_command(CMD, self.ip)
-
-    def GetTransactionReceipt_RPC(self, newHash):
-        """eth.getTransactionReceipt"""
+    def get_transactionR(self, transaction_hash):
+        """eth.getTransaction()"""
         method = 'eth_getTransactionReceipt'
-        params = [newHash]
+        params = [transaction_hash]
         return self.rpc_call(method, params)
 
-    #  G1
-    def contract(self, abi, ffrom, bin, gas):
-        """eth.contract"""
-        CMD = ("docker exec -t %s /usr/bin/geth attach ipc://root/abc/geth.ipc --exec \"mycon = eth.contract(\\\"%s\\\");mycon.new({from:\\\"%s\\\",bin:\\\"%s\\\",gas:\\\"%s\\\"})\"" % (self.name, abi, ffrom, bin, gas))
-        return exec_command(CMD, self.ip)
+    ###################################################################################################################
 
-    def contract_new(self, ffrom, bin, gas):
-        """contract_new"""
-        CMD = ("docker exec -t %s /usr/bin/geth attach ipc://root/abc/geth.ipc --exec \"mycon.new({from:\\\"%s\\\",bin:\\\"%s\\\",gas:\\\"%s\\\"})\"" % (self.name, ffrom, bin, gas))
-        return exec_command(CMD, self.ip)
+    # #  G3
+    # def Get_Contract_Address(self, abi, ffrom, bin, gas):
+    #     with open('contract.js', 'w') as contract:
+    #         contract.write('mycon = eth.contract(%s);\n' % abi)
+    #         contract.write('newcon = mycon.new({from:"%s",data:"%s",gas:%s});\n' % (ffrom, bin, gas))
+    #         # contract.write('contractAddress = newcon.address;\n')
+    #         # contract.write('console.log(newcon.transactionHash);\n')
+    #         # contract.write('contractAddress = eth.getTransactionReceipt(newcon.transactionHash).contractAddress;\n')
+    #         contract.write('eth.getTransactionReceipt(newcon.transactionHash);\n')
+    #         # contract.write('console.log(contractAddress);\n')
+    #     copy_cmd = 'sshpass -p %s scp contract.js %s@%s:contract.js' % (self.password, self.username,
+    #                                                                            self.ip.address)
+    #     subprocess.run(copy_cmd, stdout=subprocess.PIPE, shell=True)
+    #     time.sleep(0.1)
+    #     docker_cp_cmd = ("docker cp contract.js %s:/root/contract.js" % self.name)
+    #     self.ip.exec_command(docker_cp_cmd)
+    #     load_script_cmd = ("docker exec -t %s /usr/bin/geth attach ipc://root/abc/geth.ipc --exec 'loadScript(\"contract.js\")'" % self.name)
+    #     return exec_command(load_script_cmd, self.ip)
 
     ##################################################################################################
 
@@ -456,8 +439,8 @@ class GethNode(object):
 def test_transaction(node, tran):
     t_b = time.time()
     while True:
-        if node.GetTransactionReceipt_RPC(tran) != None:
-            tran_info = node.GetTransactionReceipt_RPC(tran)
+        if node.get_transactionR(tran) != None:
+            tran_info = node.get_transactionR(tran)
             if tran_info['blockNumber'] !=  None:
                 return time.time()
         t_e = time.time()

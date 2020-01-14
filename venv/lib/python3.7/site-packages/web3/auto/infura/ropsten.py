@@ -9,7 +9,7 @@ from .endpoints import (
     build_infura_url,
 )
 
-_headers = build_http_headers()
 _infura_url = build_infura_url(INFURA_ROPSTEN_DOMAIN)
+_headers = build_http_headers()
 
 w3 = Web3(load_provider_from_uri(_infura_url, _headers))

@@ -1,0 +1,12 @@
+convert_exec_avetime = 5.764578938484192
+commit_exec_avetime = 6.117736995220184
+claim_exec_avetime = 6.113300681114197
+refund_exec_avetime = 6.324778079986572
+depositA_exec_avetime = 6.238364189863205
+========================================================
+convert_consensus_avetime = 11.590944409370422
+commit_consensus_avetime = 8.126215696334839
+claim_consensus_avetime = 4.577546715736389
+refund_consensus_avetime = 6.422633528709412
+depositA_consensus_avetime = 8.98752298951149
+========================================================
