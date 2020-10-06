@@ -10,6 +10,8 @@ from typing import Union, Optional, Any
 import subprocess
 import time
 from web3 import Web3
+from resultthread import MyThread
+import re
 
 
 class GethNode(object):
@@ -45,7 +47,7 @@ class GethNode(object):
         """Start a container for geth on remote server and create a new account."""
         # --ulimit nofile=<soft limit>:<hard limit> set the limit for open files
         docker_run_command = ('docker run --ulimit nofile=65535:65535 -td -p %d:8545 -p %d:30303 --rm --name %s '
-                              'easonbackpack/evs0216:latest' % (self.rpc_port, self.ethereum_network_port, self.name))
+                              'easonbackpack/evs512:latest' % (self.rpc_port, self.ethereum_network_port, self.name))
         time.sleep(0.6)
         result = self.ip.exec_command(docker_run_command)
         if result:
@@ -134,8 +136,100 @@ class GethNode(object):
         result = self.rpc_call(method, params)
         return result
 
-    # EVs-Transactions #
     #############################################################################################
+    # EVs-Transactions 4000tx
+    def send_mulconvert_transaction(self, ffrom):
+        """eth.sendMultiTransactions"""
+        CMD = ("docker exec -t %s /usr/bin/geth attach ipc://root/abc/geth.ipc --exec \"eth.sendMultiTransactions(1,{froms: %s})\"" % (self.name, ffrom))
+        CMD = CMD.replace("\'", "\\\"")
+        convert_time = exec_command(CMD, self.ip)  # 共识时间的毫秒数
+
+        convert_time = convert_time.strip('[')
+        convert_time = convert_time.strip(']')
+        end_list = convert_time.split(",")
+        print("end_list =====", end_list)
+        # ['\x1b[31m48124\x1b[0m', ' \x1b[31m48125\x1b[0m', ' \x1b[31m48136\x1b[0m']
+        out = [end_list[0].replace('\x1b[31m', '').replace('\x1b[0m', '')]
+        for i in range(1, len(end_list)):
+            out.append(end_list[i].replace(" \x1b[31m", "").replace("\x1b[0m", ""))
+        outs = [int(x) for x in out]
+        print("数字列表outs ==", outs)
+        return outs
+
+    def send_mulcommit_transaction(self, ffrom, arr):
+        """eth.sendMultiTransactions"""
+        CMD = ("docker exec -t %s /usr/bin/geth attach ipc://root/abc/geth.ipc --exec \"eth.sendMultiTransactions(21,{froms: %s, to:\\\"%s\\\"})\"" % (self.name, ffrom, arr))
+        CMD = CMD.replace("\'", "\\\"")
+        convert_time = exec_command(CMD, self.ip)  # 共识时间的毫秒数
+
+        convert_time = convert_time.strip('[')
+        convert_time = convert_time.strip(']')
+        end_list = convert_time.split(",")
+        print("end_list =====", end_list)
+        # ['\x1b[31m48124\x1b[0m', ' \x1b[31m48125\x1b[0m', ' \x1b[31m48136\x1b[0m']
+        out = [end_list[0].replace('\x1b[31m', '').replace('\x1b[0m', '')]
+        for i in range(1, len(end_list)):
+            out.append(end_list[i].replace(" \x1b[31m", "").replace("\x1b[0m", ""))
+        outs = [int(x) for x in out]
+        print("数字列表outs ==", outs)
+        return outs
+
+    def send_mulclaim_transaction(self, ffrom, arr):
+        """eth.sendMultiTransactions"""
+        CMD = ("docker exec -t %s /usr/bin/geth attach ipc://root/abc/geth.ipc --exec \"eth.sendMultiTransactions(3,{froms: %s, to:\\\"%s\\\", addrAs: %s})\"" % (self.name, ffrom, arr, ffrom))
+        CMD = CMD.replace("\'", "\\\"")
+        convert_time = exec_command(CMD, self.ip)  # 共识时间的毫秒数
+
+        convert_time = convert_time.strip('[')
+        convert_time = convert_time.strip(']')
+        end_list = convert_time.split(",")
+        print("end_list =====", end_list)
+        # ['\x1b[31m48124\x1b[0m', ' \x1b[31m48125\x1b[0m', ' \x1b[31m48136\x1b[0m']
+        out = [end_list[0].replace('\x1b[31m', '').replace('\x1b[0m', '')]
+        for i in range(1, len(end_list)):
+            out.append(end_list[i].replace(" \x1b[31m", "").replace("\x1b[0m", ""))
+        outs = [int(x) for x in out]
+        print("数字列表outs ==", outs)
+        return outs
+
+    def send_mulrefund_transaction(self, ffrom, arr):
+        """eth.sendMultiTransactions"""
+        CMD = ("docker exec -t %s /usr/bin/geth attach ipc://root/abc/geth.ipc --exec \"eth.sendMultiTransactions(4,{froms: %s, to:\\\"%s\\\"})\"" % (self.name, ffrom, arr))
+        CMD = CMD.replace("\'", "\\\"")
+        convert_time = exec_command(CMD, self.ip)  # 共识时间的毫秒数
+
+        convert_time = convert_time.strip('[')
+        convert_time = convert_time.strip(']')
+        end_list = convert_time.split(",")
+        print("end_list =====", end_list)
+        # ['\x1b[31m48124\x1b[0m', ' \x1b[31m48125\x1b[0m', ' \x1b[31m48136\x1b[0m']
+        out = [end_list[0].replace('\x1b[31m', '').replace('\x1b[0m', '')]
+        for i in range(1, len(end_list)):
+            out.append(end_list[i].replace(" \x1b[31m", "").replace("\x1b[0m", ""))
+        outs = [int(x) for x in out]
+        print("数字列表outs ==", outs)
+        return outs
+
+    def send_muldeposit_transaction(self, ffrom):
+        """eth.sendMultiTransactions"""
+        CMD = ("docker exec -t %s /usr/bin/geth attach ipc://root/abc/geth.ipc --exec \"eth.sendMultiTransactions(5,{froms: %s, N: \\\"%s\\\"})\"" % (self.name, ffrom, "0x0"))
+        CMD = CMD.replace("\'", "\\\"")
+        convert_time = exec_command(CMD, self.ip)  # 共识时间的毫秒数
+
+        convert_time = convert_time.strip('[')
+        convert_time = convert_time.strip(']')
+        end_list = convert_time.split(",")
+        print("end_list =====", end_list)
+        # ['\x1b[31m48124\x1b[0m', ' \x1b[31m48125\x1b[0m', ' \x1b[31m48136\x1b[0m']
+        out = [end_list[0].replace('\x1b[31m', '').replace('\x1b[0m', '')]
+        for i in range(1, len(end_list)):
+            out.append(end_list[i].replace(" \x1b[31m", "").replace("\x1b[0m", ""))
+        outs = [int(x) for x in out]
+        print("数字列表outs ==", outs)
+        return outs
+
+    ###################################################################################################################
+
     def send_mint_transaction(self, ffrom, value, test_node):
         """eth.sendMintTransaction"""
         CMD = ("docker exec -t %s /usr/bin/geth attach ipc://root/abc/geth.ipc --exec \"eth.sendMintTransaction({from:\\\"%s\\\",value:\\\"%s\\\"})\"" % (self.name, ffrom, value))

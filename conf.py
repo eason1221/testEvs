@@ -43,7 +43,7 @@ def generate_genesis_pow(chain_id, accounts, config_file):
     genesis['config']['chainId'] = chain_id
     for acc in accounts:
         genesis['alloc'][acc] = {
-            'balance': "0x2000000000"}  # 添加账户和余额
+            'balance': "0x4000000000000000"}  # 添加账户和余额
 
     new_genesis = json.dumps(genesis, indent=2)  # ident 缩进相关
     with open('%s' % config_file, 'w') as f:

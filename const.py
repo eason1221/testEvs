@@ -5,8 +5,8 @@ import threading
 
 USERNAME = 'ubuntu'  # username of servers
 PASSWD = 'easonBACKPACK123'  # password of servers
-MAXPAYLOAD = 3  # maximum number of containers running on one server 单个ip最大的容器数
-NODE_COUNT = 60  # 主机个数 * MAXPAYLOAD   #所有节点数:最大为主机数×MAXPAYLOAD
+MAXPAYLOAD = 4  # maximum number of containers running on one server 单个ip最大的容器数
+NODE_COUNT = 40  # 主机个数 * MAXPAYLOAD   #所有节点数:最大为主机数×MAXPAYLOAD
 IP_CONFIG = 'ip.txt'  # server IPs
 SECONDS_IN_A_DAY = 60 * 60 * 24
 SEMAPHORE = threading.BoundedSemaphore(15)
