@@ -11,6 +11,7 @@ import subprocess
 import threading
 from resultthread import MyThread
 from web3 import Web3
+import numpy as np
 
 
 class SingleChain():
@@ -256,7 +257,7 @@ class SingleChain():
                 t.join()
 
 # --------------------------------test-mul--------------------------------
-# 4000 tx
+# 4000 tx 发送批量交易函数
 
 
 def test_send_mul_converts(convert_num, nodes, accounts):
@@ -264,21 +265,22 @@ def test_send_mul_converts(convert_num, nodes, accounts):
     for i in range(convert_num):
         t = MyThread(nodes[i].send_mulconvert_transaction, args=(accounts[i],))
         threads.append(t)
-        time.sleep(3)
+        time.sleep(1)
     for t in threads:
         t.start()
-        time.sleep(3)
+        time.sleep(1)
     for t in threads:
         t.join()
-        time.sleep(3)
 
     convert_end_time = []
     for t in threads:
         try:
             t2 = t.get_result()  # consensus_time是从产生hash到打包到区块的时间
         except:
-            t2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            t2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         print("get t2 ==", t2)
+
         convert_end_time = convert_end_time + t2
         convert_end_time = sorted(convert_end_time, reverse=False)
     return convert_end_time
@@ -289,21 +291,21 @@ def test_send_mul_commits(convert_num, nodes, accounts, arr):
     for i in range(convert_num):
         t = MyThread(nodes[i].send_mulcommit_transaction, args=(accounts[i], arr))
         threads.append(t)
-        time.sleep(3)
+        time.sleep(1)
     for t in threads:
         t.start()
-        time.sleep(3)
+        time.sleep(1)
     for t in threads:
         t.join()
-        time.sleep(3)
 
     convert_end_time = []
     for t in threads:
         try:
             t2 = t.get_result()  # consensus_time是从产生hash到打包到区块的时间
         except:
-            t2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            t2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         print("get t2 ==", t2)
+
         convert_end_time = convert_end_time + t2
         convert_end_time = sorted(convert_end_time, reverse=False)
     return convert_end_time
@@ -314,21 +316,22 @@ def test_send_mul_claims(convert_num, nodes, accounts, arr):
     for i in range(convert_num):
         t = MyThread(nodes[i].send_mulclaim_transaction, args=(accounts[i], arr))
         threads.append(t)
-        time.sleep(3)
+        time.sleep(1)
     for t in threads:
         t.start()
-        time.sleep(3)
+        time.sleep(1)
     for t in threads:
         t.join()
-        time.sleep(3)
 
     convert_end_time = []
     for t in threads:
         try:
             t2 = t.get_result()  # consensus_time是从产生hash到打包到区块的时间
         except:
-            t2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            t2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         print("get t2 ==", t2)
+
         convert_end_time = convert_end_time + t2
         convert_end_time = sorted(convert_end_time, reverse=False)
     return convert_end_time
@@ -338,22 +341,21 @@ def test_send_mul_refunds(convert_num, nodes, accounts, arr):
     for i in range(convert_num):
         t = MyThread(nodes[i].send_mulrefund_transaction, args=(accounts[i], arr))
         threads.append(t)
-        time.sleep(4)
+        time.sleep(1)
     for t in threads:
         t.start()
-        time.sleep(4)
+        time.sleep(1)
     for t in threads:
         t.join()
-        time.sleep(4)
 
     convert_end_time = []
     for t in threads:
         try:
             t2 = t.get_result()  # consensus_time是从产生hash到打包到区块的时间
         except:
-            t2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-
+            t2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         print("get t2 ==", t2)
+
         convert_end_time = convert_end_time + t2
         convert_end_time = sorted(convert_end_time, reverse=False)
     return convert_end_time
@@ -364,27 +366,28 @@ def test_send_mul_deposits(convert_num, nodes, accounts):
     for i in range(convert_num):
         t = MyThread(nodes[i].send_muldeposit_transaction, args=(accounts[i],))
         threads.append(t)
-        time.sleep(4)
+        time.sleep(1)
     for t in threads:
         t.start()
-        time.sleep(4)
+        time.sleep(1)
     for t in threads:
         t.join()
-        time.sleep(4)
 
     convert_end_time = []
     for t in threads:
         try:
             t2 = t.get_result()  # consensus_time是从产生hash到打包到区块的时间
         except:
-            t2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-
+            t2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         print("get t2 ==", t2)
+
         convert_end_time = convert_end_time + t2
         convert_end_time = sorted(convert_end_time, reverse=False)
     return convert_end_time
+
+
 ####################################################################################################################
-# test_get_mul_contractaddr
+# test_get_mul_contractaddr 批量产生智能合约地址
 
 
 def test_get_mul_contractaddr(contract_num, nodes):
@@ -409,6 +412,7 @@ def test_get_mul_contractaddr(contract_num, nodes):
         contractaddr_list.append(contractaddr)
     return contractaddr_list
 
+# 单笔交易发送函数
 # test_send_mul_mint
 
 
@@ -447,7 +451,6 @@ def test_send_mul_mint(mint_num, nodes, accounts, test_nodes):
 
 
 # test_send_mul_convert
-
 def test_send_mul_convert(convert_num, nodes, accounts, test_nodes):
     threads = []
     for i in range(convert_num):
@@ -524,7 +527,6 @@ def test_send_mul_commit(commit_num, nodes, accounts, contractaddr, test_nodes):
 
 
 # test_send_mul_claim
-
 def test_send_mul_claim(claim_num, nodes, accounts, contractaddr, addrA, test_nodes):
     threads = []
     for i in range(claim_num):
@@ -563,7 +565,6 @@ def test_send_mul_claim(claim_num, nodes, accounts, contractaddr, addrA, test_no
 
 
 # test_send_mul_rerfund
-
 def test_send_mul_refund(refund_num, nodes, accounts, contractaddr, test_nodes):
     threads = []
     for i in range(refund_num):
@@ -601,7 +602,8 @@ def test_send_mul_refund(refund_num, nodes, accounts, contractaddr, test_nodes):
     return refund_hash_list, refund_start_time, refund_end_time
 
 
-# test_send_mul_deposit
+"""test_send_mul_deposit"""
+
 
 def test_send_mul_deposit(deposit_num, nodes, accounts, N, test_nodes):
     threads = []
@@ -705,7 +707,7 @@ def send_mul_redeem(redeem_num, nodes, accos, test_node):
     print(redeem_tran_time)
     return redeem_hash_list, redeem_tran_time
 
-
+# 批量挖矿
 def mul_miner_start(nodes):
     threads = []
     for i in range(len(nodes)):
@@ -736,13 +738,16 @@ if __name__ == "__main__":
     print("------------------账户列表------------------")
     accounts_A = []
     # accounts_B = []
-
+    # 通过泊松分布规律产生交易数量，发送的交易数量满足泊松分布
+    x = np.random.poisson(lam=20, size=NODE_COUNT)
     for i in range(1, NODE_COUNT+1):  # NODE_COUNT+1, 1
         temp = []
-        for j in range(80):  #5
-            temp.append(c.get_node_by_index(i).get_accounts()[0])
+        acc = c.get_node_by_index(i).get_accounts()[0]
+        for j in range(x[i-1]):
+            temp.append(acc)
         print("temp_account:", temp)
         accounts_A.append(temp)
+
     # for i in range(1, NODE_COUNT+1, 1):
     #     accounts_B.append(c.get_node_by_index(i).get_accounts()[0])
     print("A类账户：", accounts_A)
@@ -757,12 +762,12 @@ if __name__ == "__main__":
     # for i in range(1, NODE_COUNT+1, 1):
     #     nodes_B.append(c.get_node_by_index(i))
     print("A类nodes：", nodes_A)
-
+    # 客户端初始化DAG需要一段时间，根据开的容器多少可以自行设定
     print("-----------Wait for Generate DAG------------")
     print("Please wait for some minutes......")
-    time.sleep(500)
+    time.sleep(600)
 
-    # Gen_hash_chain
+    # Gen_hash_chain 产生哈希链
     # print('------------------Gen_hash_chain------------------')
     # hashchainlength = 1000
     # t1 = time.time()
@@ -773,7 +778,7 @@ if __name__ == "__main__":
     # print("Hash_chain_Arr = ", hashchainarr)
     # time.sleep(3)
 
-    # Get_contract_addr
+    # Get_contract_addr 获取智能合约地址
     print('------------------Get-Contract-Address------------------')
     #  部署合约
     w3 = Web3(Web3.HTTPProvider("http://%s:%d" % (nodes_A[0].ip.address, nodes_A[0].rpc_port)))
@@ -788,6 +793,7 @@ if __name__ == "__main__":
     contract_address = tx_receipt['contractAddress']
     print("contract_address =", contract_address)
 
+    # 发送交易
     # print('------------------test_send_mul_mint------------------')
     # mint_hash_list, mint_consensus_avetime, mint_exec_avetime = test_send_mul_mint(tran_number // 2, nodes_A,
     #                                                                                accounts_A, nodes_A)
@@ -801,11 +807,11 @@ if __name__ == "__main__":
     # time.sleep(2)
     print("Please enter the command manually:")
 
-    # print('------------------test_send_mul_converts------------------')
-    # convert_end_list = test_send_mul_converts(NODE_COUNT, nodes_A, accounts_A)
-    #
-    # time.sleep(2)
-    # # convert_end_list = [str(i % 10000) for i in convert_end_list]
+    print('------------------test_send_mul_converts------------------')
+    convert_end_list = test_send_mul_converts(NODE_COUNT, nodes_A, accounts_A)
+
+    time.sleep(2)
+    # convert_end_list = [str(i % 10000) for i in convert_end_list]
     # with open('convert.txt', 'w') as f:
     #     for line in convert_end_list:
     #         f.write(str(line) + '\n')
@@ -820,14 +826,14 @@ if __name__ == "__main__":
     #         f.write(str(line) + '\n')
     # print('commit成功写入文件......')
 
-    print('------------------test_send_mul_claims------------------')
-    claim_end_list = test_send_mul_claims(NODE_COUNT, nodes_A, accounts_A, contract_address)
-
-    time.sleep(2)
-    with open('claim.txt', 'w') as f:
-        for line in claim_end_list:
-            f.write(str(line) + '\n')
-    print('claim成功写入文件......')
+    # print('------------------test_send_mul_claims------------------')
+    # claim_end_list = test_send_mul_claims(NODE_COUNT, nodes_A, accounts_A, contract_address)
+    #
+    # time.sleep(2)
+    # with open('claim.txt', 'w') as f:
+    #     for line in claim_end_list:
+    #         f.write(str(line) + '\n')
+    # print('claim成功写入文件......')
     #
     # print('------------------test_send_mul_refunds------------------')
     # refund_end_list = test_send_mul_refunds(NODE_COUNT, nodes_A, accounts_A, contract_address)

@@ -137,7 +137,7 @@ class GethNode(object):
         return result
 
     #############################################################################################
-    # EVs-Transactions 4000tx
+    # EVs-Transactions 4000tx test， 与docker容器进行交互的函数，可以根据自己的客户端api进行修改，并对返回的数据进行处理
     def send_mulconvert_transaction(self, ffrom):
         """eth.sendMultiTransactions"""
         CMD = ("docker exec -t %s /usr/bin/geth attach ipc://root/abc/geth.ipc --exec \"eth.sendMultiTransactions(1,{froms: %s})\"" % (self.name, ffrom))
@@ -154,6 +154,11 @@ class GethNode(object):
             out.append(end_list[i].replace(" \x1b[31m", "").replace("\x1b[0m", ""))
         outs = [int(x) for x in out]
         print("数字列表outs ==", outs)
+
+        with open('convert.txt', 'a') as f:
+            for line in outs:
+                f.write(str(line) + '\n')
+        print('convert成功写入文件......')
         return outs
 
     def send_mulcommit_transaction(self, ffrom, arr):
@@ -172,6 +177,11 @@ class GethNode(object):
             out.append(end_list[i].replace(" \x1b[31m", "").replace("\x1b[0m", ""))
         outs = [int(x) for x in out]
         print("数字列表outs ==", outs)
+
+        with open('commit.txt', 'a') as f:
+            for line in outs:
+                f.write(str(line) + '\n')
+        print('commit成功写入文件......')
         return outs
 
     def send_mulclaim_transaction(self, ffrom, arr):
@@ -190,6 +200,11 @@ class GethNode(object):
             out.append(end_list[i].replace(" \x1b[31m", "").replace("\x1b[0m", ""))
         outs = [int(x) for x in out]
         print("数字列表outs ==", outs)
+
+        with open('claim.txt', 'a') as f:
+            for line in outs:
+                f.write(str(line) + '\n')
+        print('claim成功写入文件......')
         return outs
 
     def send_mulrefund_transaction(self, ffrom, arr):
@@ -208,6 +223,11 @@ class GethNode(object):
             out.append(end_list[i].replace(" \x1b[31m", "").replace("\x1b[0m", ""))
         outs = [int(x) for x in out]
         print("数字列表outs ==", outs)
+
+        with open('refund.txt', 'a') as f:
+            for line in outs:
+                f.write(str(line) + '\n')
+        print('refund成功写入文件......')
         return outs
 
     def send_muldeposit_transaction(self, ffrom):
@@ -226,6 +246,11 @@ class GethNode(object):
             out.append(end_list[i].replace(" \x1b[31m", "").replace("\x1b[0m", ""))
         outs = [int(x) for x in out]
         print("数字列表outs ==", outs)
+
+        with open('deposit.txt', 'a') as f:
+            for line in outs:
+                f.write(str(line) + '\n')
+        print('deposit成功写入文件......')
         return outs
 
     ###################################################################################################################
