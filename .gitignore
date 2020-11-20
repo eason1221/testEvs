@@ -8,6 +8,7 @@ __pycache__/
 
 # other files
 dockertest/
+.idea
 
 # Distribution / packaging
 .Python
